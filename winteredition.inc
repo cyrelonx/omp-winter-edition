@@ -14,17 +14,64 @@
 #include "./src/we/we_snowcap.inc"
 #include "./src/we/we_coldbreath.inc"
 
+static _WE_AllSettingsStatus[MAX_PLAYERS];
+
 public OnPlayerConnect(playerid)
 {
-    snowFallingStatus[playerid] = false;
-    snowCapStatus[playerid] = false;
-    coldBreathStatus[playerid] = false;
+    _WE_AllSettingsStatus[playerid] = 0;
+
+	if (Winter_GetColdBreathStatus(playerid))
+		Winter_SetColdBreathStatus(playerid);
+        
+    if (Winter_GetSnowCapStatus(playerid))
+        Winter_SetSnowCapStatus(playerid);
+        
+    if (Winter_GetSnowflakeStatus(playerid))
+        Winter_SetSnowflakeStatus(playerid);
     
     #if defined __WE_OnPlayerConnect
         return __WE_OnPlayerConnect(playerid);
     #else
         return 1;
     #endif
+}
+
+stock Winter_GetAllStatus(const playerid) return _WE_AllSettingsStatus[playerid];
+stock Winter_SetStatusAll(const playerid)
+{
+    new const bool: status = !Winter_GetAllStatus(playerid);
+    if (!status)
+    {
+        if (Winter_GetColdBreathStatus(playerid))
+            Winter_SetColdBreathStatus(playerid);
+        
+        if (Winter_GetSnowCapStatus(playerid))
+            Winter_SetSnowCapStatus(playerid);
+        
+        if (Winter_GetSnowflakeStatus(playerid))
+            Winter_SetSnowflakeStatus(playerid);
+        
+        if (Winter_GetSnowObjStatus(playerid))
+            Winter_ShowSnowObjects(playerid);
+
+        _WE_AllSettingsStatus[playerid] = 0;
+        return 1;
+    }
+
+    if (!Winter_GetColdBreathStatus(playerid))
+        Winter_SetColdBreathStatus(playerid);
+    
+    if (!Winter_GetSnowCapStatus(playerid))
+        Winter_SetSnowCapStatus(playerid);
+    
+    if (!Winter_GetSnowflakeStatus(playerid))
+        Winter_SetSnowflakeStatus(playerid);
+    
+    if (!Winter_GetSnowObjStatus(playerid))
+        Winter_ShowSnowObjects(playerid);
+
+    _WE_AllSettingsStatus[playerid] = 1;
+    return 1;
 }
 
 #if defined _ALS_OnPlayerConnect
